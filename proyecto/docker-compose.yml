@@ -1,0 +1,71 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: gestor_citas_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_secret}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-gestor_citas_medicas}
+      MYSQL_USER: ${MYSQL_USER:-citas_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-citas_pass}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/database:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - gestor_citas_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gestor_citas_backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PORT: ${BACKEND_PORT:-3000}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: ${MYSQL_USER:-citas_user}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-citas_pass}
+      DB_NAME: ${MYSQL_DATABASE:-gestor_citas_medicas}
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    volumes:
+      - ./backend/src:/usr/src/app/src
+      - ./backend/server.js:/usr/src/app/server.js
+    networks:
+      - gestor_citas_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gestor_citas_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    volumes:
+      - ./frontend/index.html:/usr/share/nginx/html/index.html:ro
+      - ./frontend/public:/usr/share/nginx/html/public:ro
+      - ./frontend/js:/usr/share/nginx/html/js:ro
+    networks:
+      - gestor_citas_net
+
+volumes:
+  mysql_data:
+
+networks:
+  gestor_citas_net:
+    driver: bridge
