@@ -6,15 +6,37 @@
   <title>Gestor de Citas Médicas - ESCOM IPN</title>
   <link rel="stylesheet" href="public/css/styles.css">
 </head>
-<body>
-  <main>
-    <h1>Gestor de Citas Médicas</h1>
-    <p>Estructura base inicializada (ESCOM - IPN).</p>
+<body ng-controller="MainController">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <span class="brand-title">Gestor de Citas Médicas</span>
+      <span class="brand-sub">ESCOM · IPN</span>
+    </div>
+
+    <nav class="topbar-nav" ng-if="usuarioActual">
+      <span class="user-badge">{{ usuarioActual.nombre }} ({{ etiquetaRol(usuarioActual.rol) }})</span>
+      <a class="btn btn-secondary btn-sm" ng-if="usuarioActual.rol === 'DIRECTOR_GENERAL'" href="#!/director">Panel Director</a>
+      <a class="btn btn-secondary btn-sm" ng-if="usuarioActual.rol === 'ADMIN_AREA'" href="#!/admin-area">Panel Área</a>
+      <button type="button" class="btn btn-danger btn-sm" ng-click="cerrarSesion()">Cerrar sesión</button>
+    </nav>
+
+    <nav class="topbar-nav" ng-if="!usuarioActual">
+      <a class="btn btn-secondary btn-sm" href="#!/login">Iniciar sesión</a>
+      <a class="btn btn-primary btn-sm" href="#!/registro">Registrarse</a>
+    </nav>
+  </header>
+
+  <main class="container">
     <div ng-view></div>
   </main>
 
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-route.min.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/services/AuthService.js"></script>
+  <script src="js/services/UsuarioService.js"></script>
+  <script src="js/controllers/AuthController.js"></script>
+  <script src="js/controllers/DirectorController.js"></script>
+  <script src="js/controllers/AdminAreaController.js"></script>
 </body>
 </html>

@@ -1,0 +1,73 @@
+<section>
+  <div class="card">
+    <h2>Panel de Dirección General</h2>
+    <p class="subtitle">Registra administradores de área y asigna su especialidad médica.</p>
+
+    <div class="alert alert-error" ng-if="error">{{ error }}</div>
+    <div class="alert alert-success" ng-if="mensaje">{{ mensaje }}</div>
+
+    <form ng-submit="registrarAdminArea()">
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="admin-nombre">Nombre completo</label>
+          <input id="admin-nombre" type="text" ng-model="nuevoAdmin.nombre" required>
+        </div>
+
+        <div class="form-group">
+          <label for="admin-especialidad">Área de especialidad</label>
+          <select id="admin-especialidad" ng-model="nuevoAdmin.idEspecialidad" ng-options="e.idEspecialidad as e.nombre for e in especialidades" required>
+            <option value="">Selecciona una especialidad</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="admin-correo">Correo electrónico</label>
+          <input id="admin-correo" type="email" ng-model="nuevoAdmin.correo" required>
+        </div>
+
+        <div class="form-group">
+          <label for="admin-telefono">Teléfono</label>
+          <input id="admin-telefono" type="tel" ng-model="nuevoAdmin.telefono" minlength="8" required>
+        </div>
+
+        <div class="form-group">
+          <label for="admin-password">Contraseña inicial</label>
+          <input id="admin-password" type="password" ng-model="nuevoAdmin.password" minlength="6" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" ng-disabled="cargando">
+        {{ cargando ? 'Guardando...' : 'Registrar Administrador de Área' }}
+      </button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Administradores de Área registrados</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Especialidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="a in admins">
+            <td>{{ a.idUsuario }}</td>
+            <td>{{ a.nombre }}</td>
+            <td>{{ a.correo }}</td>
+            <td>{{ a.telefono }}</td>
+            <td>{{ a.areaEspecialidad }}</td>
+          </tr>
+          <tr ng-if="admins.length === 0">
+            <td colspan="5" class="text-center">Sin administradores registrados aún.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
