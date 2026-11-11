@@ -7,6 +7,9 @@ const Database = require('./src/config/database');
 const authRoutes = require('./src/routes/authRoutes');
 const directorGeneralRoutes = require('./src/routes/directorGeneralRoutes');
 const administradorAreaRoutes = require('./src/routes/administradorAreaRoutes');
+const citaMedicaRoutes = require('./src/routes/citaMedicaRoutes');
+const pacienteRoutes = require('./src/routes/pacienteRoutes');
+const recepcionistaRoutes = require('./src/routes/recepcionistaRoutes');
 
 class AppServer {
   constructor() {
@@ -35,6 +38,9 @@ class AppServer {
     this.app.use('/api/auth', authRoutes);
     this.app.use('/api/director', directorGeneralRoutes);
     this.app.use('/api/admin-area', administradorAreaRoutes);
+    this.app.use('/api/citas', citaMedicaRoutes);
+    this.app.use('/api/pacientes', pacienteRoutes);
+    this.app.use('/api/recepcion', recepcionistaRoutes);
   }
 
   configurarErrores() {
