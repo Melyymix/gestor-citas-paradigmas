@@ -10,6 +10,7 @@ const administradorAreaRoutes = require('./src/routes/administradorAreaRoutes');
 const citaMedicaRoutes = require('./src/routes/citaMedicaRoutes');
 const pacienteRoutes = require('./src/routes/pacienteRoutes');
 const recepcionistaRoutes = require('./src/routes/recepcionistaRoutes');
+const doctorRoutes = require('./src/routes/doctorRoutes');
 
 class AppServer {
   constructor() {
@@ -41,6 +42,7 @@ class AppServer {
     this.app.use('/api/citas', citaMedicaRoutes);
     this.app.use('/api/pacientes', pacienteRoutes);
     this.app.use('/api/recepcion', recepcionistaRoutes);
+    this.app.use('/api/doctor', doctorRoutes);
   }
 
   configurarErrores() {

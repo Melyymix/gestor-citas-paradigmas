@@ -17,6 +17,9 @@
       <span class="user-badge">{{ usuarioActual.nombre }} ({{ etiquetaRol(usuarioActual.rol) }})</span>
       <a class="btn btn-secondary btn-sm" ng-if="usuarioActual.rol === 'DIRECTOR_GENERAL'" href="#!/director">Panel Director</a>
       <a class="btn btn-secondary btn-sm" ng-if="usuarioActual.rol === 'ADMIN_AREA'" href="#!/admin-area">Panel Área</a>
+      <a class="btn btn-secondary btn-sm" ng-if="usuarioActual.rol === 'DOCTOR'" href="#!/doctor">Panel Doctor</a>
+      <a class="btn btn-secondary btn-sm" ng-if="usuarioActual.rol === 'RECEPCIONISTA'" href="#!/recepcionista">Panel Recepción</a>
+      <a class="btn btn-secondary btn-sm" ng-if="usuarioActual.rol === 'PACIENTE'" href="#!/paciente">Mis Citas</a>
       <button type="button" class="btn btn-danger btn-sm" ng-click="cerrarSesion()">Cerrar sesión</button>
     </nav>
 
@@ -35,8 +38,13 @@
   <script src="js/app.js"></script>
   <script src="js/services/AuthService.js"></script>
   <script src="js/services/UsuarioService.js"></script>
+  <script src="js/services/CitaService.js"></script>
+  <script src="js/services/DoctorService.js"></script>
   <script src="js/controllers/AuthController.js"></script>
   <script src="js/controllers/DirectorController.js"></script>
   <script src="js/controllers/AdminAreaController.js"></script>
+  <script src="js/controllers/PacienteController.js"></script>
+  <script src="js/controllers/RecepcionistaController.js"></script>
+  <script src="js/controllers/DoctorController.js"></script>
 </body>
 </html>

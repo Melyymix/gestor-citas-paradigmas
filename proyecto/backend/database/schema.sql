@@ -120,4 +120,16 @@ INSERT IGNORE INTO especialidades (nombre, descripcion) VALUES
   ('Ginecología', 'Salud integral femenina');
 
 INSERT IGNORE INTO usuarios (id_usuario, nombre, correo, telefono, password_hash, rol) VALUES
-  (1, 'Director General ESCOM', 'director@escom.mx', '5512345678', 'd7441d6a48b275fe51bdf28581eb5890:7f50962861dd2f8efed2a9c2c8339d2bce22aa974f8d594ff49dc81af6c808c77f082b72174dedf17365fd6e7ede1ea05cf57223aca883a404646b63b5a71625', 'DIRECTOR_GENERAL');
+  (1, 'Director General ESCOM', 'director@escom.mx', '5512345678', 'd7441d6a48b275fe51bdf28581eb5890:7f50962861dd2f8efed2a9c2c8339d2bce22aa974f8d594ff49dc81af6c808c77f082b72174dedf17365fd6e7ede1ea05cf57223aca883a404646b63b5a71625', 'DIRECTOR_GENERAL'),
+  (2, 'Dr. Gregory House', 'house@hospital.com', '5599887766', 'd7441d6a48b275fe51bdf28581eb5890:7f50962861dd2f8efed2a9c2c8339d2bce22aa974f8d594ff49dc81af6c808c77f082b72174dedf17365fd6e7ede1ea05cf57223aca883a404646b63b5a71625', 'DOCTOR');
+
+INSERT IGNORE INTO doctores (id_usuario, id_especialidad, cedula_profesional)
+VALUES (2, 1, 'CED-99887766');
+
+-- Horario del doctor de prueba: Lunes a Viernes 9:00–17:00
+INSERT IGNORE INTO horarios_doctor (id_doctor, dia_semana, hora_inicio, hora_fin) VALUES
+  (2, 1, '09:00:00', '17:00:00'),
+  (2, 2, '09:00:00', '17:00:00'),
+  (2, 3, '09:00:00', '17:00:00'),
+  (2, 4, '09:00:00', '17:00:00'),
+  (2, 5, '09:00:00', '17:00:00');

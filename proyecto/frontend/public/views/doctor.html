@@ -1,0 +1,114 @@
+<div class="page-header">
+  <h1 class="page-title">Panel del Doctor</h1>
+  <p class="page-subtitle" ng-if="usuario">Bienvenido, <strong>{{ usuario.nombre }}</strong></p>
+</div>
+
+<!-- Alertas -->
+<div class="alert alert-success" ng-if="mensaje">{{ mensaje }}</div>
+<div class="alert alert-danger"  ng-if="error">{{ error }}</div>
+<div class="alert alert-info"    ng-if="cargando">Cargando…</div>
+
+<div class="dashboard-grid">
+  <!-- Panel Izquierdo: Citas pendientes -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Citas Pendientes</h2>
+    </div>
+    <div class="card-body">
+      <div ng-if="citasPendientes.length === 0 && !cargando" class="text-muted">
+        No hay citas pendientes.
+      </div>
+      <div ng-repeat="cita in citasPendientes" class="cita-item" ng-class="{'cita-activa': citaSeleccionada && citaSeleccionada.idCita === cita.idCita}">
+        <div class="cita-info">
+          <strong>{{ cita.nombrePaciente }}</strong>
+          <span class="badge badge-secondary">{{ cita.curp }}</span><br>
+          <small>{{ cita.fechaHora | date:'dd/MM/yyyy HH:mm' }}</small>
+          <span class="badge" ng-class="cita.estado === 'PAGADA' ? 'badge-success' : 'badge-warning'">
+            {{ cita.estado }}
+          </span>
+        </div>
+        <div class="cita-actions">
+          <button class="btn btn-primary btn-sm" ng-click="atenderCita(cita)" ng-disabled="cargando">
+            Atender
+          </button>
+          <button class="btn btn-danger btn-sm" ng-click="cancelarCita(cita)" ng-disabled="cargando">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel Derecho: Formulario de consulta + expediente -->
+  <div class="card" ng-if="citaSeleccionada">
+    <div class="card-header">
+      <h2 class="card-title">Registrar Consulta</h2>
+      <p class="card-subtitle">Paciente: <strong>{{ citaSeleccionada.nombrePaciente }}</strong></p>
+    </div>
+    <div class="card-body">
+
+      <!-- Expediente clínico previo -->
+      <details class="expediente-details" ng-if="expedientePaciente.length > 0">
+        <summary>Historial clínico previo ({{ expedientePaciente.length }} consulta(s))</summary>
+        <div class="expediente-list">
+          <div class="expediente-item" ng-repeat="consulta in expedientePaciente">
+            <strong>{{ consulta.fechaConsulta | date:'dd/MM/yyyy' }}</strong> — Dr. {{ consulta.nombreDoctor }}<br>
+            <em>Diagnóstico:</em> {{ consulta.diagnostico }}<br>
+            <em>Receta:</em> {{ consulta.recetaMedicamentos || 'Sin receta' }}
+          </div>
+        </div>
+      </details>
+
+      <!-- Formulario nueva consulta -->
+      <form ng-submit="guardarConsulta()" class="form-grid">
+        <div class="form-group">
+          <label for="motivo">Motivo de consulta *</label>
+          <input id="motivo" type="text" class="form-control" ng-model="nuevaConsulta.motivo" required>
+        </div>
+
+        <div class="form-group">
+          <label for="diagnostico">Diagnóstico *</label>
+          <textarea id="diagnostico" class="form-control" rows="3" ng-model="nuevaConsulta.diagnostico" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="observaciones">Observaciones</label>
+          <textarea id="observaciones" class="form-control" rows="2" ng-model="nuevaConsulta.observaciones"></textarea>
+        </div>
+
+        <div class="form-section-title">Receta Médica</div>
+
+        <div class="form-group">
+          <label for="recetaMedicamentos">Medicamentos</label>
+          <input id="recetaMedicamentos" type="text" class="form-control" ng-model="nuevaConsulta.recetaMedicamentos">
+        </div>
+
+        <div class="form-group">
+          <label for="recetaDosis">Dosis</label>
+          <input id="recetaDosis" type="text" class="form-control" ng-model="nuevaConsulta.recetaDosis">
+        </div>
+
+        <div class="form-group">
+          <label for="recetaIndicaciones">Indicaciones</label>
+          <textarea id="recetaIndicaciones" class="form-control" rows="2" ng-model="nuevaConsulta.recetaIndicaciones"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" ng-disabled="cargando">
+            Guardar Consulta
+          </button>
+          <button type="button" class="btn btn-secondary" ng-click="citaSeleccionada = null">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Placeholder cuando no hay cita seleccionada -->
+  <div class="card card-empty" ng-if="!citaSeleccionada">
+    <div class="card-body card-body-centered">
+      <p class="text-muted">Selecciona una cita para atenderla.</p>
+    </div>
+  </div>
+</div>

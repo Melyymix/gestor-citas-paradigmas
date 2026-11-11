@@ -27,6 +27,21 @@ angular
           controller: 'AdminAreaController',
           roles: ['ADMIN_AREA'],
         })
+        .when('/doctor', {
+          templateUrl: 'public/views/doctor.html',
+          controller: 'DoctorController',
+          roles: ['DOCTOR'],
+        })
+        .when('/recepcionista', {
+          templateUrl: 'public/views/recepcionista.html',
+          controller: 'RecepcionistaController',
+          roles: ['RECEPCIONISTA'],
+        })
+        .when('/paciente', {
+          templateUrl: 'public/views/paciente.html',
+          controller: 'PacienteController',
+          roles: ['PACIENTE'],
+        })
         .otherwise({ redirectTo: '/login' });
     },
   ])
@@ -38,6 +53,9 @@ angular
       const rutaPorRol = {
         DIRECTOR_GENERAL: '/director',
         ADMIN_AREA: '/admin-area',
+        DOCTOR: '/doctor',
+        RECEPCIONISTA: '/recepcionista',
+        PACIENTE: '/paciente',
       };
 
       $rootScope.$on('$routeChangeStart', function (_event, next) {
