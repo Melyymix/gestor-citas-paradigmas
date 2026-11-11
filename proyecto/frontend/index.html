@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" ng-app="gestorCitasApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestor de Citas Médicas - ESCOM IPN</title>
+  <link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body ng-controller="MainController">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <span class="brand-title">Gestor de Citas Médicas</span>
+      <span class="brand-sub">ESCOM · IPN</span>
+    </div>
+
+    <nav class="topbar-nav" ng-if="usuarioActual">
+      <span class="user-badge">{{ usuarioActual.nombre }} ({{ etiquetaRol(usuarioActual.rol) }})</span>
+      <a class="btn btn-secondary btn-sm" ng-if="usuarioActual.rol === 'DIRECTOR_GENERAL'" href="#!/director">Panel Director</a>
+      <a class="btn btn-secondary btn-sm" ng-if="usuarioActual.rol === 'ADMIN_AREA'" href="#!/admin-area">Panel Área</a>
+      <a class="btn btn-secondary btn-sm" ng-if="usuarioActual.rol === 'DOCTOR'" href="#!/doctor">Panel Doctor</a>
+      <a class="btn btn-secondary btn-sm" ng-if="usuarioActual.rol === 'RECEPCIONISTA'" href="#!/recepcionista">Panel Recepción</a>
+      <a class="btn btn-secondary btn-sm" ng-if="usuarioActual.rol === 'PACIENTE'" href="#!/paciente">Mis Citas</a>
+      <button type="button" class="btn btn-danger btn-sm" ng-click="cerrarSesion()">Cerrar sesión</button>
+    </nav>
+
+    <nav class="topbar-nav" ng-if="!usuarioActual">
+      <a class="btn btn-secondary btn-sm" href="#!/login">Iniciar sesión</a>
+      <a class="btn btn-primary btn-sm" href="#!/registro">Registrarse</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div ng-view></div>
+  </main>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-route.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/services/AuthService.js"></script>
+  <script src="js/services/UsuarioService.js"></script>
+  <script src="js/services/CitaService.js"></script>
+  <script src="js/services/DoctorService.js"></script>
+  <script src="js/controllers/AuthController.js"></script>
+  <script src="js/controllers/DirectorController.js"></script>
+  <script src="js/controllers/AdminAreaController.js"></script>
+  <script src="js/controllers/PacienteController.js"></script>
+  <script src="js/controllers/RecepcionistaController.js"></script>
+  <script src="js/controllers/DoctorController.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<div class="container mt-4" ng-controller="PacienteController">
+  <h2>Panel del Paciente</h2>
+
+  <!-- Alertas de éxito y error -->
+  <div class="alert alert-success" ng-if="mensajeExito">{{ mensajeExito }}</div>
+  <div class="alert alert-danger" ng-if="mensajeError">{{ mensajeError }}</div>
+
+  <!-- Formulario para Agendar Cita -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h4 class="m-0">Agendar Nueva Cita Médica</h4>
+    </div>
+    <div class="card-body">
+      <form ng-submit="agendarCita()">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label>Especialidad Médica:</label>
+            <select class="form-select" ng-model="nuevaCita.especialidadId" ng-change="alCambiarEspecialidad()" required>
+              <option value="">-- Seleccionar Especialidad --</option>
+              <option value="1">Medicina General</option>
+              <option value="2">Cardiología</option>
+              <option value="3">Pediatría</option>
+              <option value="4">Dermatología</option>
+              <option value="5">Ginecología</option>
+            </select>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label>Doctor:</label>
+            <select class="form-select" ng-model="nuevaCita.idDoctor" ng-change="alSeleccionarDoctor()" required>
+              <option value="">-- Seleccionar Doctor --</option>
+              <option ng-repeat="doc in doctores" value="{{ doc.id_doctor }}">
+                Dr. {{ doc.nombre }} ({{ doc.especialidad }})
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Horarios laborables del doctor -->
+        <div class="alert alert-info" ng-if="horariosDoctor.length > 0">
+          <strong>Horarios disponibles del doctor:</strong>
+          <ul>
+            <li ng-repeat="h in horariosDoctor">
+              Día {{ h.dia_semana }} | Horario: {{ h.hora_inicio }} - {{ h.hora_fin }}
+            </li>
+          </ul>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label>Fecha y Hora de Cita:</label>
+            <input type="datetime-local" class="form-control" ng-model="nuevaCita.fechaHora" required />
+            <small class="text-muted">Mínimo 48 horas de anticipación.</small>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label>Monto Anticipo ($):</label>
+            <input type="number" class="form-control" ng-model="nuevaCita.montoAnticipo" min="100" required />
+            <small class="text-muted">Mínimo 20% ($100.00 sobre $500.00)</small>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label>Referencia Bancaria (Simulada):</label>
+            <input type="text" class="form-control" ng-model="nuevaCita.referenciaBancaria" placeholder="Ej. REF-987654" required />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Confirmar y Agendar Cita</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla de Citas del Paciente -->
+  <div class="card">
+    <div class="card-header bg-dark text-white">
+      <h4 class="m-0">Mis Citas Médicas</h4>
+    </div>
+    <div class="card-body">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>ID Cita</th>
+            <th>Doctor</th>
+            <th>Especialidad</th>
+            <th>Fecha / Hora</th>
+            <th>Estado</th>
+            <th>Anticipo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="cita in misCitas">
+            <td>#{{ cita.id_cita }}</td>
+            <td>Dr. {{ cita.nombre_doctor }}</td>
+            <td>{{ cita.especialidad }}</td>
+            <td>{{ cita.fecha_hora | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>
+              <span class="badge bg-warning text-dark" ng-if="cita.estado === 'AGENDADA/PENDIENTE DE PAGO'">{{ cita.estado }}</span>
+              <span class="badge bg-primary" ng-if="cita.estado === 'PAGADA'">{{ cita.estado }}</span>
+              <span class="badge bg-success" ng-if="cita.estado === 'REALIZADA'">{{ cita.estado }}</span>
+              <span class="badge bg-danger" ng-if="cita.estado === 'CANCELADA'">{{ cita.estado }}</span>
+            </td>
+            <td>${{ cita.monto_anticipo | number:2 }}</td>
+            <td>
+              <button class="btn btn-sm btn-danger" ng-if="cita.estado !== 'CANCELADA' && cita.estado !== 'REALIZADA'" ng-click="cancelarCita(cita.id_cita)">
+                Cancelar (>= 48h)
+              </button>
+            </td>
+          </tr>
+          <tr ng-if="misCitas.length === 0">
+            <td colspan="7" class="text-center">No tienes citas registradas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

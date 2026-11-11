@@ -1,0 +1,168 @@
+<section>
+  <div class="card">
+    <h2>Administración de Área — {{ usuario.areaEspecialidad }}</h2>
+    <p class="subtitle">Gestiona el catálogo de doctores, recepcionistas y pacientes de tu especialidad.</p>
+
+    <div class="tabs">
+      <button type="button" class="tab-btn" ng-class="{active: tab === 'DOCTORES'}" ng-click="cambiarTab('DOCTORES')">Doctores</button>
+      <button type="button" class="tab-btn" ng-class="{active: tab === 'RECEPCIONISTAS'}" ng-click="cambiarTab('RECEPCIONISTAS')">Recepcionistas</button>
+      <button type="button" class="tab-btn" ng-class="{active: tab === 'PACIENTES'}" ng-click="cambiarTab('PACIENTES')">Pacientes</button>
+    </div>
+
+    <div class="alert alert-error" ng-if="error">{{ error }}</div>
+    <div class="alert alert-success" ng-if="mensaje">{{ mensaje }}</div>
+
+    <form ng-if="tab === 'DOCTORES'" ng-submit="registrarDoctor()">
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" ng-model="nuevoDoctor.nombre" required>
+        </div>
+        <div class="form-group">
+          <label>Cédula profesional (opcional)</label>
+          <input type="text" ng-model="nuevoDoctor.cedulaProfesional">
+        </div>
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <input type="email" ng-model="nuevoDoctor.correo" required>
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="tel" ng-model="nuevoDoctor.telefono" minlength="8" required>
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" ng-model="nuevoDoctor.password" minlength="6" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Horario laboral (HH:MM)</label>
+        <div class="schedule-row" ng-repeat="h in nuevoDoctor.horarios track by $index">
+          <select ng-model="h.diaSemana" ng-options="d.id as d.nombre for d in diasSemana"></select>
+          <input type="text" ng-model="h.horaInicio" pattern="^([01]\d|2[0-3]):[0-5]\d$" placeholder="09:00" required>
+          <input type="text" ng-model="h.horaFin" pattern="^([01]\d|2[0-3]):[0-5]\d$" placeholder="15:00" required>
+          <button type="button" class="btn btn-danger btn-sm" ng-click="quitarHorario($index)" ng-if="nuevoDoctor.horarios.length > 1">Quitar</button>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" ng-click="agregarHorario()">+ Agregar bloque</button>
+      </div>
+
+      <button type="submit" class="btn btn-primary" ng-disabled="cargando">Registrar Doctor</button>
+    </form>
+
+    <form ng-if="tab === 'RECEPCIONISTAS'" ng-submit="registrarRecepcionista()">
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" ng-model="nuevoRecepcionista.nombre" required>
+        </div>
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <input type="email" ng-model="nuevoRecepcionista.correo" required>
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="tel" ng-model="nuevoRecepcionista.telefono" minlength="8" required>
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" ng-model="nuevoRecepcionista.password" minlength="6" required>
+        </div>
+      </div>
+      <label class="checkbox-inline">
+        <input type="checkbox" ng-model="nuevoRecepcionista.permisoCancelacionEspecial">
+        Permitir cancelación especial con reembolso
+      </label>
+      <button type="submit" class="btn btn-primary" ng-disabled="cargando">Registrar Recepcionista</button>
+    </form>
+
+    <form ng-if="tab === 'PACIENTES'" ng-submit="registrarPaciente()">
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" ng-model="nuevoPaciente.nombre" required>
+        </div>
+        <div class="form-group">
+          <label>CURP</label>
+          <input type="text" ng-model="nuevoPaciente.curp" maxlength="18" minlength="18" required>
+        </div>
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <input type="email" ng-model="nuevoPaciente.correo" required>
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="tel" ng-model="nuevoPaciente.telefono" minlength="8" required>
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" ng-model="nuevoPaciente.password" minlength="6" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" ng-disabled="cargando">Registrar Paciente</button>
+    </form>
+  </div>
+
+  <div class="card" ng-if="tab === 'DOCTORES'">
+    <h3>Doctores del área</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Cédula</th></tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="d in doctores">
+            <td>{{ d.idUsuario }}</td>
+            <td>{{ d.nombre }}</td>
+            <td>{{ d.correo }}</td>
+            <td>{{ d.telefono }}</td>
+            <td>{{ d.cedulaProfesional || '-' }}</td>
+          </tr>
+          <tr ng-if="doctores.length === 0"><td colspan="5" class="text-center">Sin doctores registrados.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" ng-if="tab === 'RECEPCIONISTAS'">
+    <h3>Recepcionistas del área</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Cancelación especial</th></tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="r in recepcionistas">
+            <td>{{ r.idUsuario }}</td>
+            <td>{{ r.nombre }}</td>
+            <td>{{ r.correo }}</td>
+            <td>{{ r.telefono }}</td>
+            <td>{{ r.permisoCancelacionEspecial ? 'Sí' : 'No' }}</td>
+          </tr>
+          <tr ng-if="recepcionistas.length === 0"><td colspan="5" class="text-center">Sin recepcionistas registrados.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" ng-if="tab === 'PACIENTES'">
+    <h3>Pacientes registrados</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nombre</th><th>CURP</th><th>Correo</th><th>Teléfono</th></tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="p in pacientes">
+            <td>{{ p.idUsuario }}</td>
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.curp }}</td>
+            <td>{{ p.correo }}</td>
+            <td>{{ p.telefono }}</td>
+          </tr>
+          <tr ng-if="pacientes.length === 0"><td colspan="5" class="text-center">Sin pacientes registrados.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

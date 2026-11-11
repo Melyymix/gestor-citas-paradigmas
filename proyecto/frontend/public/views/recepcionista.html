@@ -1,0 +1,88 @@
+<div class="container mt-4" ng-controller="RecepcionistaController">
+  <h2>Panel de Recepción y Control Operativo</h2>
+
+  <!-- Alertas de éxito y error -->
+  <div class="alert alert-success" ng-if="mensajeExito">{{ mensajeExito }}</div>
+  <div class="alert alert-danger" ng-if="mensajeError">{{ mensajeError }}</div>
+
+  <div class="row">
+    <!-- Formulario 1: Alta de Paciente en Ventanilla -->
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header bg-secondary text-white">
+          <h4 class="m-0">Registrar Nuevo Paciente</h4>
+        </div>
+        <div class="card-body">
+          <form ng-submit="registrarPaciente()">
+            <div class="mb-2">
+              <label>Nombre Completo:</label>
+              <input type="text" class="form-control" ng-model="nuevoPaciente.nombre" required />
+            </div>
+            <div class="mb-2">
+              <label>Correo Electrónico:</label>
+              <input type="email" class="form-control" ng-model="nuevoPaciente.correo" required />
+            </div>
+            <div class="mb-2">
+              <label>Teléfono:</label>
+              <input type="text" class="form-control" ng-model="nuevoPaciente.telefono" required />
+            </div>
+            <div class="mb-2">
+              <label>CURP (18 caracteres):</label>
+              <input type="text" class="form-control" ng-model="nuevoPaciente.curp" maxlength="18" required />
+            </div>
+            <div class="mb-3">
+              <label>Contraseña Temporal:</label>
+              <input type="password" class="form-control" ng-model="nuevoPaciente.password" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Registrar Paciente</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario 2: Cobro de Saldo Restante en Efectivo -->
+    <div class="col-md-6 mb-4">
+      <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+          <h4 class="m-0">Procesar Pago Restante (Caja)</h4>
+        </div>
+        <div class="card-body">
+          <form ng-submit="procesarPago()">
+            <div class="mb-3">
+              <label>ID de la Cita Médica:</label>
+              <input type="number" class="form-control" ng-model="pagoEnCaja.idCita" placeholder="Ej. 1" required />
+            </div>
+            <button type="submit" class="btn btn-success w-100">Registrar Pago en Efectivo (Liquidada)</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Formulario 3: Cancelación Especial -->
+      <div class="card">
+        <div class="card-header bg-warning text-dark">
+          <h4 class="m-0">Cancelación Especial por Recepción</h4>
+        </div>
+        <div class="card-body">
+          <form ng-submit="procesarCancelacionEspecial()">
+            <div class="mb-2">
+              <label>ID de la Cita:</label>
+              <input type="number" class="form-control" ng-model="cancelacionEspecial.idCita" required />
+            </div>
+            <div class="mb-2">
+              <label>Origen de la Cancelación:</label>
+              <select class="form-select" ng-model="cancelacionEspecial.canceladaPor" required>
+                <option value="RECEPCIONISTA">Recepcionista / Paciente</option>
+                <option value="DOCTOR">Doctor (Impedimento Médico)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label>Justificación / Motivo:</label>
+              <input type="text" class="form-control" ng-model="cancelacionEspecial.motivo" placeholder="Motivo de la exención" required />
+            </div>
+            <button type="submit" class="btn btn-danger w-100">Ejecutar Cancelación Especial</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
