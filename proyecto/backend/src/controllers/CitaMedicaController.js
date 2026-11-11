@@ -44,10 +44,24 @@ class CitaMedicaController {
     }
   }
 
+  static async cancelarPorRecepcion(req, res) {
+    try {
+      const resultado = await CitaMedicaService.cancelarOrdinaria(req.params.id, {
+        idRecepcionista: req.usuario.idUsuario,
+      });
+      res.json({ ok: true, ...resultado });
+    } catch (error) {
+      res.status(error.statusCode || 500).json({ ok: false, error: error.message });
+    }
+  }
+
   // PUT /api/citas/:id/cancelar-especial
   static async cancelarEspecial(req, res) {
     try {
       const { id } = req.params;
+      if (!req.usuario.permisoCancelacionEspecial) {
+        return res.status(403).json({ ok: false, error: 'Tu cuenta no tiene permiso de cancelación especial' });
+      }
       const { motivo, canceladaPor } = req.body; // canceladaPor: 'RECEPCIONISTA' o 'DOCTOR'
       const idRecepcionista = req.usuario.idUsuario;
 

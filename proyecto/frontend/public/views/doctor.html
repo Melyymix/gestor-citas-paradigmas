@@ -1,46 +1,44 @@
-<div class="page-header">
-  <h1 class="page-title">Panel del Doctor</h1>
-  <p class="page-subtitle" ng-if="usuario">Bienvenido, <strong>{{ usuario.nombre }}</strong></p>
-</div>
+<section class="doctor-dashboard">
+  <header class="doctor-heading">
+    <h1>Agenda médica</h1>
+    <p class="subtitle" ng-if="usuario">{{ usuario.nombre }}</p>
+  </header>
 
-<!-- Alertas -->
-<div class="alert alert-success" ng-if="mensaje">{{ mensaje }}</div>
-<div class="alert alert-danger"  ng-if="error">{{ error }}</div>
-<div class="alert alert-info"    ng-if="cargando">Cargando…</div>
+  <div class="alert alert-success" role="status" ng-if="mensaje">{{ mensaje }}</div>
+  <div class="alert alert-error" role="alert" ng-if="error">{{ error }}</div>
+  <div class="alert alert-info" role="status" ng-if="cargando">Cargando…</div>
 
-<div class="dashboard-grid">
-  <!-- Panel Izquierdo: Citas pendientes -->
-  <div class="card">
-    <div class="card-header">
-      <h2 class="card-title">Citas Pendientes</h2>
-    </div>
-    <div class="card-body">
-      <div ng-if="citasPendientes.length === 0 && !cargando" class="text-muted">
-        No hay citas pendientes.
+  <section class="card agenda-card" aria-labelledby="agenda-semana">
+    <div class="agenda-toolbar">
+      <div>
+        <h2 id="agenda-semana" aria-live="polite">{{ rangoSemana }}</h2>
+        <p class="subtitle">{{ totalSemana === 1 ? '1 cita pendiente' : totalSemana + ' citas pendientes' }}</p>
       </div>
-      <div ng-repeat="cita in citasPendientes" class="cita-item" ng-class="{'cita-activa': citaSeleccionada && citaSeleccionada.idCita === cita.idCita}">
-        <div class="cita-info">
+      <div class="agenda-nav">
+        <button type="button" class="btn btn-secondary" ng-click="cambiarSemana(-1)" aria-label="Semana anterior">‹</button>
+        <button type="button" class="btn btn-secondary" ng-click="irAHoy()">Hoy</button>
+        <button type="button" class="btn btn-secondary" ng-click="cambiarSemana(1)" aria-label="Semana siguiente">›</button>
+      </div>
+    </div>
+
+    <div class="agenda-week">
+      <section class="agenda-day" ng-repeat="dia in diasAgenda track by dia.fecha.getTime()" ng-class="{ 'agenda-today': dia.hoy }">
+        <h3><span>{{ dia.etiqueta }}</span><time>{{ dia.fecha | date:'d' }}</time></h3>
+        <p class="agenda-free" ng-if="!dia.citas.length">Sin citas</p>
+        <article class="agenda-event" ng-repeat="cita in dia.citas track by cita.idCita"
+                 ng-class="{ 'agenda-paid': cita.estado === 'PAGADA', 'agenda-selected': citaSeleccionada.idCita === cita.idCita }">
+          <time>{{ cita.fechaHora | date:'HH:mm' }}</time>
           <strong>{{ cita.nombrePaciente }}</strong>
-          <span class="badge badge-secondary">{{ cita.curp }}</span><br>
-          <small>{{ cita.fechaHora | date:'dd/MM/yyyy HH:mm' }}</small>
-          <span class="badge" ng-class="cita.estado === 'PAGADA' ? 'badge-success' : 'badge-warning'">
-            {{ cita.estado }}
-          </span>
-        </div>
-        <div class="cita-actions">
-          <button class="btn btn-primary btn-sm" ng-click="atenderCita(cita)" ng-disabled="cargando">
-            Atender
-          </button>
-          <button class="btn btn-danger btn-sm" ng-click="cancelarCita(cita)" ng-disabled="cargando">
-            Cancelar
-          </button>
-        </div>
-      </div>
+          <small>{{ cita.estado === 'PAGADA' ? 'Pagada' : 'Pago pendiente' }}</small>
+          <button type="button" class="btn btn-secondary btn-sm" ng-click="atenderCita(cita)" ng-disabled="cargando"
+                  ng-attr-aria-pressed="{{ citaSeleccionada.idCita === cita.idCita }}">Atender</button>
+        </article>
+      </section>
     </div>
-  </div>
+  </section>
 
   <!-- Panel Derecho: Formulario de consulta + expediente -->
-  <div class="card" ng-if="citaSeleccionada">
+  <div class="card agenda-consulta" ng-if="citaSeleccionada">
     <div class="card-header">
       <h2 class="card-title">Registrar Consulta</h2>
       <p class="card-subtitle">Paciente: <strong>{{ citaSeleccionada.nombrePaciente }}</strong></p>
@@ -98,17 +96,14 @@
             Guardar Consulta
           </button>
           <button type="button" class="btn btn-secondary" ng-click="citaSeleccionada = null">
-            Cancelar
+            Cerrar consulta
+          </button>
+          <button type="button" class="btn btn-danger" ng-click="cancelarCita(citaSeleccionada)" ng-disabled="cargando">
+            Cancelar cita
           </button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Placeholder cuando no hay cita seleccionada -->
-  <div class="card card-empty" ng-if="!citaSeleccionada">
-    <div class="card-body card-body-centered">
-      <p class="text-muted">Selecciona una cita para atenderla.</p>
-    </div>
-  </div>
-</div>
+</section>

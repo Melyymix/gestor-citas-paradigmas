@@ -1,0 +1,90 @@
+<section class="auth-wrapper" ng-class="{ 'auth-register': esRegistro }">
+  <div class="auth-form auth-login">
+    <h2>Iniciar sesión</h2>
+    <p class="subtitle">Accede con tu correo electrónico y contraseña.</p>
+
+    <div class="alert alert-error" ng-if="login.error">{{ login.error }}</div>
+    <div class="alert alert-info" ng-if="login.mensaje">{{ login.mensaje }}</div>
+
+    <form ng-submit="iniciarSesion()">
+      <div class="form-group">
+        <label for="login-correo">Correo electrónico</label>
+        <input id="login-correo" type="email" ng-model="credenciales.correo" required placeholder="usuario@correo.com">
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">Contraseña</label>
+        <div class="password-field">
+          <input id="login-password" type="{{ login.mostrarPassword ? 'text' : 'password' }}" autocomplete="current-password" ng-model="credenciales.password" required placeholder="••••••••">
+          <button type="button" class="password-toggle" ng-click="login.mostrarPassword = !login.mostrarPassword"
+                  aria-controls="login-password" aria-label="{{ login.mostrarPassword ? 'Ocultar contraseña' : 'Mostrar contraseña' }}">
+            <span class="material-symbols-outlined" aria-hidden="true">{{ login.mostrarPassword ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" ng-disabled="cargando">
+        {{ cargando ? 'Validando...' : 'Entrar' }}
+      </button>
+    </form>
+
+    <p class="subtitle text-center mt-1">
+      ¿No tienes cuenta? <a href="#!/registro">Regístrate aquí</a>
+    </p>
+  </div>
+  <div class="auth-form auth-signup">
+    <h2>Crear cuenta de paciente</h2>
+
+    <div class="alert alert-error" ng-if="alta.error">{{ alta.error }}</div>
+    <div class="alert alert-success" ng-if="alta.mensaje">{{ alta.mensaje }}</div>
+
+    <form ng-submit="enviarRegistro()">
+      <div class="form-group">
+        <label for="reg-nombre">Nombre completo</label>
+        <input id="reg-nombre" type="text" ng-model="registro.nombre" required placeholder="Ej. Ana García López">
+      </div>
+
+      <div class="form-group">
+        <label for="reg-curp">CURP</label>
+        <input id="reg-curp" type="text" ng-model="registro.curp" normalizar-entrada="curp" autocapitalize="characters" spellcheck="false" maxlength="18" minlength="18" required placeholder="18 caracteres">
+      </div>
+
+      <div class="form-group">
+        <label for="reg-telefono">Teléfono</label>
+        <input id="reg-telefono" type="tel" inputmode="numeric" autocomplete="tel" normalizar-entrada="telefono" ng-model="registro.telefono" minlength="8" required placeholder="Ej. 5512345678">
+      </div>
+
+      <div class="form-group">
+        <label for="reg-correo">Correo electrónico</label>
+        <input id="reg-correo" type="email" ng-model="registro.correo" required placeholder="ana@ejemplo.com">
+      </div>
+
+      <div class="form-group">
+        <label for="reg-password">Contraseña</label>
+        <div class="password-field">
+          <input id="reg-password" type="{{ alta.mostrarPassword ? 'text' : 'password' }}" autocomplete="new-password" ng-model="registro.password" minlength="6" required placeholder="Mínimo 6 caracteres">
+          <button type="button" class="password-toggle" ng-click="alta.mostrarPassword = !alta.mostrarPassword"
+                  aria-controls="reg-password" aria-label="{{ alta.mostrarPassword ? 'Ocultar contraseña' : 'Mostrar contraseña' }}">
+            <span class="material-symbols-outlined" aria-hidden="true">{{ alta.mostrarPassword ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" ng-disabled="cargando">
+        {{ cargando ? 'Registrando...' : 'Crear cuenta' }}
+      </button>
+    </form>
+
+    <p class="subtitle text-center mt-1">
+      ¿Ya tienes cuenta? <a href="#!/login">Inicia sesión</a>
+    </p>
+  </div>
+  <div class="auth-art" aria-hidden="true">
+    <div class="auth-calendar">
+      <span class="auth-calendar-mark">+</span>
+      <div class="auth-calendar-days">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+    </div>
+  </div>
+</section>

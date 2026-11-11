@@ -7,16 +7,6 @@ angular
     '$routeProvider',
     function ($routeProvider) {
       $routeProvider
-        .when('/login', {
-          templateUrl: 'public/views/login.html',
-          controller: 'AuthController',
-          publico: true,
-        })
-        .when('/registro', {
-          templateUrl: 'public/views/registro.html',
-          controller: 'AuthController',
-          publico: true,
-        })
         .when('/director', {
           templateUrl: 'public/views/director.html',
           controller: 'DirectorController',
@@ -28,7 +18,7 @@ angular
           roles: ['ADMIN_AREA'],
         })
         .when('/doctor', {
-          templateUrl: 'public/views/doctor.html',
+          templateUrl: 'public/views/doctor.html?v=2',
           controller: 'DoctorController',
           roles: ['DOCTOR'],
         })
@@ -41,6 +31,15 @@ angular
           templateUrl: 'public/views/paciente.html',
           controller: 'PacienteController',
           roles: ['PACIENTE'],
+        })
+        .when('/:modo', {
+          templateUrl: 'public/views/acceso.html?v=7',
+          controller: 'AuthController',
+          publico: true,
+          reloadOnUrl: false,
+          redirectTo: function (params) {
+            if (params.modo !== 'login' && params.modo !== 'registro') return '/login';
+          },
         })
         .otherwise({ redirectTo: '/login' });
     },

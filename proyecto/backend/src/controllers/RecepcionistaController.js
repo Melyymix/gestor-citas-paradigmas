@@ -1,29 +1,13 @@
 'use strict';
 
 const Database = require('../config/database');
-const Paciente = require('../models/Paciente');
-const Usuario = require('../models/Usuario');
+const AuthService = require('../services/AuthService');
 
 class RecepcionistaController {
   // POST /api/recepcion/pacientes (Registro manual de paciente en recepción)
   static async registrarPaciente(req, res) {
     try {
-      const { nombre, correo, telefono, password, curp } = req.body;
-      const paciente = new Paciente({ nombre, correo, telefono, password, curp });
-      paciente.validarDatos();
-
-      const passHash = Usuario.hashPassword(password);
-
-      // Inserción en la tabla usuarios y pacientes
-      const resultUser = await Database.query(
-        `INSERT INTO usuarios (nombre, correo, telefono, password_hash, rol) VALUES (?, ?, ?, ?, 'PACIENTE')`,
-        [paciente.nombre, paciente.correo, paciente.telefono, passHash]
-      );
-
-      const idUsuario = resultUser.insertId;
-      await Database.query(`INSERT INTO pacientes (id_usuario, curp) VALUES (?, ?)`, [idUsuario, paciente.curp]);
-
-      paciente.idUsuario = idUsuario;
+      const paciente = await AuthService.registrarPacientePropio(req.body);
       res.status(201).json({ ok: true, mensaje: 'Paciente registrado exitosamente por Recepción', paciente });
     } catch (error) {
       if (error.code === 'ER_DUP_ENTRY') {

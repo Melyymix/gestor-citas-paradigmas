@@ -1,6 +1,7 @@
 'use strict';
 
-const pool = require('../config/database');
+const Database = require('../config/database');
+const pool = Database.getPool();
 
 class ConsultaMedica {
   /**

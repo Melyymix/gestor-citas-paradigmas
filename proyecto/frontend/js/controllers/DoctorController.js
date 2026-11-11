@@ -13,6 +13,53 @@ angular.module('gestorCitasApp').controller('DoctorController', [
     $scope.mensaje = '';
     $scope.cargando = false;
 
+    const hoy = new Date();
+    const inicioSemana = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+    inicioSemana.setDate(inicioSemana.getDate() - (inicioSemana.getDay() + 6) % 7);
+    let semana = new Date(inicioSemana);
+
+    function fechaLocal(fecha) {
+      return [fecha.getFullYear(), fecha.getMonth(), fecha.getDate()].join('-');
+    }
+
+    const formatoDia = new Intl.DateTimeFormat('es-MX', { weekday: 'short' });
+
+    function actualizarAgenda() {
+      const citasPorDia = new Map();
+      $scope.citasPendientes.forEach(function (cita) {
+        const clave = fechaLocal(new Date(cita.fechaHora));
+        if (!citasPorDia.has(clave)) citasPorDia.set(clave, []);
+        citasPorDia.get(clave).push(cita);
+      });
+
+      $scope.diasAgenda = Array.from({ length: 7 }, function (_, indice) {
+        const fecha = new Date(semana);
+        fecha.setDate(fecha.getDate() + indice);
+        const clave = fechaLocal(fecha);
+        return {
+          fecha,
+          etiqueta: formatoDia.format(fecha),
+          hoy: clave === fechaLocal(hoy),
+          citas: citasPorDia.get(clave) || [],
+        };
+      });
+      $scope.totalSemana = $scope.diasAgenda.reduce((total, dia) => total + dia.citas.length, 0);
+      const formato = new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+      $scope.rangoSemana = formato.formatRange(semana, $scope.diasAgenda[6].fecha);
+    }
+
+    $scope.cambiarSemana = function (direccion) {
+      semana.setDate(semana.getDate() + direccion * 7);
+      actualizarAgenda();
+    };
+
+    $scope.irAHoy = function () {
+      semana = new Date(inicioSemana);
+      actualizarAgenda();
+    };
+
+    actualizarAgenda();
+
     function crearConsultaVacia() {
       return {
         motivo: '',
@@ -32,6 +79,7 @@ angular.module('gestorCitasApp').controller('DoctorController', [
       DoctorService.obtenerCitasPendientes()
         .then(function (citas) {
           $scope.citasPendientes = citas || [];
+          actualizarAgenda();
         })
         .catch(function (err) {
           $scope.error = (err.data && err.data.mensaje) || 'Error al cargar citas pendientes';
@@ -43,6 +91,7 @@ angular.module('gestorCitasApp').controller('DoctorController', [
 
     $scope.atenderCita = function (cita) {
       $scope.citaSeleccionada = cita;
+      $scope.expedientePaciente = [];
       $scope.error = '';
       $scope.mensaje = '';
       $scope.nuevaConsulta = crearConsultaVacia();
@@ -50,10 +99,10 @@ angular.module('gestorCitasApp').controller('DoctorController', [
 
       DoctorService.obtenerExpediente(cita.idPaciente)
         .then(function (expediente) {
-          $scope.expedientePaciente = expediente || [];
+          if ($scope.citaSeleccionada === cita) $scope.expedientePaciente = expediente || [];
         })
         .catch(function (err) {
-          $scope.expedientePaciente = [];
+          if ($scope.citaSeleccionada !== cita) return;
           $scope.error = (err.data && err.data.mensaje) || 'Error al consultar expediente clínico';
         });
     };

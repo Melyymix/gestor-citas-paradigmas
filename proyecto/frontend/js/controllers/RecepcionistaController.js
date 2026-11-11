@@ -20,16 +20,71 @@ angular.module('gestorCitasApp').controller('RecepcionistaController', ['$scope'
     canceladaPor: 'RECEPCIONISTA'
   };
 
+  $scope.nuevaCita = { montoAnticipo: 100, montoTotal: 500 };
+  $scope.cancelacion = {};
+  $scope.doctores = [];
+  $scope.horariosDoctor = [];
+  $scope.dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+  CitaService.consultarDoctores().then(function(res) {
+    $scope.doctores = res.data.doctores;
+  }, function() {
+    $scope.mensajeError = 'No se pudo cargar el catálogo de doctores';
+  });
+
+  $scope.consultarHorario = function() {
+    const idDoctor = $scope.nuevaCita.idDoctor;
+    $scope.horariosDoctor = [];
+    if (!idDoctor) return;
+    CitaService.consultarHorariosDoctor(idDoctor).then(function(res) {
+      if ($scope.nuevaCita.idDoctor === idDoctor) $scope.horariosDoctor = res.data.horarios;
+    }, function() {
+      if ($scope.nuevaCita.idDoctor === idDoctor) $scope.mensajeError = 'No se pudo cargar el horario';
+    });
+  };
+
+  function ejecutar(operacion, mensaje, limpiar) {
+    $scope.mensajeError = '';
+    $scope.mensajeExito = '';
+    return operacion.then(function(res) {
+      $scope.mensajeExito = mensaje(res.data);
+      limpiar();
+    }, function(err) {
+      $scope.mensajeError = (err.data && (err.data.error || err.data.mensaje)) || 'No se pudo completar la operación';
+    });
+  }
+
+  $scope.agendarCita = function() {
+    if ($scope.agendando) return;
+    $scope.agendando = true;
+    ejecutar(CitaService.agendarCita($scope.nuevaCita), function(data) {
+      return 'Cita agendada. Folio ' + data.cita.idCita + '.';
+    }, function() {
+      $scope.nuevaCita = { montoAnticipo: 100, montoTotal: 500 };
+      $scope.horariosDoctor = [];
+    }).finally(function() { $scope.agendando = false; });
+  };
+
+  $scope.cancelarCita = function() {
+    if ($scope.cancelando || !window.confirm('¿Cancelar la cita ' + $scope.cancelacion.idCita + '?')) return;
+    $scope.cancelando = true;
+    ejecutar(CitaService.cancelarPorRecepcion($scope.cancelacion.idCita), function(data) {
+      return data.mensaje;
+    }, function() {
+      $scope.cancelacion = {};
+    }).finally(function() { $scope.cancelando = false; });
+  };
+
   // Registrar Paciente desde Recepción
   $scope.registrarPaciente = function() {
     $scope.mensajeError = '';
     $scope.mensajeExito = '';
 
     CitaService.registrarPacienteRecepcion($scope.nuevoPaciente).then(function(res) {
-      $scope.mensajeExito = res.data.mensaje;
+      $scope.mensajeExito = res.data.mensaje + '. ID de paciente: ' + res.data.paciente.idUsuario;
       $scope.nuevoPaciente = {};
     }, function(err) {
-      $scope.mensajeError = err.data.error || 'Error al registrar paciente';
+      $scope.mensajeError = (err.data && (err.data.error || err.data.mensaje)) || 'Error al registrar paciente';
     });
   };
 
@@ -42,7 +97,7 @@ angular.module('gestorCitasApp').controller('RecepcionistaController', ['$scope'
       $scope.mensajeExito = res.data.mensaje;
       $scope.pagoEnCaja.idCita = '';
     }, function(err) {
-      $scope.mensajeError = err.data.error || 'Error al registrar el pago';
+      $scope.mensajeError = (err.data && (err.data.error || err.data.mensaje)) || 'Error al registrar el pago';
     });
   };
 
@@ -59,7 +114,7 @@ angular.module('gestorCitasApp').controller('RecepcionistaController', ['$scope'
       $scope.mensajeExito = res.data.mensaje;
       $scope.cancelacionEspecial = { canceladaPor: 'RECEPCIONISTA' };
     }, function(err) {
-      $scope.mensajeError = err.data.error || 'Error al realizar cancelación especial';
+      $scope.mensajeError = (err.data && (err.data.error || err.data.mensaje)) || 'Error al realizar cancelación especial';
     });
   };
 }]);

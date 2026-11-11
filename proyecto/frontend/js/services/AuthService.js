@@ -56,9 +56,5 @@ angular.module('gestorCitasApp').service('AuthService', [
     this.registroPaciente = function (datos) {
       return $http.post(API_URL + '/auth/registro-paciente', datos).then((res) => res.data);
     };
-
-    this.registroDirector = function (datos) {
-      return $http.post(API_URL + '/director/cuenta', datos).then((res) => res.data);
-    };
   },
 ]);

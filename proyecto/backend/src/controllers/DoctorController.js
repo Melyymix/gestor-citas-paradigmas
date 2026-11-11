@@ -9,7 +9,7 @@ class DoctorController {
    */
   static async obtenerCitasPendientes(req, res, next) {
     try {
-      const idDoctor = req.usuario.id_usuario;
+      const idDoctor = req.usuario.idUsuario;
       const citas = await ConsultaMedicaService.obtenerCitasPendientes(idDoctor);
       res.json({ ok: true, citas });
     } catch (err) {
@@ -23,7 +23,7 @@ class DoctorController {
    */
   static async obtenerExpediente(req, res, next) {
     try {
-      const idDoctor = req.usuario.id_usuario;
+      const idDoctor = req.usuario.idUsuario;
       const idPaciente = Number(req.params.idPaciente);
       const expediente = await ConsultaMedicaService.obtenerExpediente(idPaciente, idDoctor);
       res.json({ ok: true, expediente });
@@ -40,7 +40,7 @@ class DoctorController {
    */
   static async registrarConsulta(req, res, next) {
     try {
-      const idDoctor = req.usuario.id_usuario;
+      const idDoctor = req.usuario.idUsuario;
       const { idCita, motivo, diagnostico, observaciones,
               recetaMedicamentos, recetaDosis, recetaIndicaciones } = req.body;
 
@@ -66,7 +66,7 @@ class DoctorController {
    */
   static async cancelarCita(req, res, next) {
     try {
-      const idDoctor = req.usuario.id_usuario;
+      const idDoctor = req.usuario.idUsuario;
       const idCita = Number(req.params.idCita);
       const { motivoCancelacion } = req.body;
 

@@ -6,7 +6,6 @@ const AuthService = require('../services/AuthService');
 
 const router = express.Router();
 
-router.post('/cuenta', DirectorGeneralController.crearCuenta);
 router.get(
   '/especialidades',
   AuthService.requerirAuth,

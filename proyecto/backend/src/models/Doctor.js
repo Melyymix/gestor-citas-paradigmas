@@ -1,6 +1,7 @@
 'use strict';
 
-const pool = require('../config/database');
+const Database = require('../config/database');
+const pool = Database.getPool();
 
 class Doctor {
   /**
@@ -13,6 +14,7 @@ class Doctor {
     const [rows] = await pool.execute(
       `SELECT
          c.id_cita        AS idCita,
+         c.id_paciente    AS idPaciente,
          c.fecha_hora     AS fechaHora,
          c.estado,
          c.monto_total    AS montoTotal,

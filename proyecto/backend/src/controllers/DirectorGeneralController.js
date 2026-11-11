@@ -3,15 +3,6 @@
 const UsuarioService = require('../services/UsuarioService');
 
 class DirectorGeneralController {
-  static async crearCuenta(req, res, next) {
-    try {
-      const director = await UsuarioService.crearCuentaDirector(req.body);
-      res.status(201).json({ ok: true, usuario: director });
-    } catch (err) {
-      next(err);
-    }
-  }
-
   static async registrarAdminArea(req, res, next) {
     try {
       const admin = await UsuarioService.registrarAdministradorArea(req.usuario, req.body);
